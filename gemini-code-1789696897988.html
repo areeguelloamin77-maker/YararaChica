@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yarará Chica - Guía Interactiva Avanzada</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --accent: #E67E22;
+            --danger: #E74C3C;
+            --success: #27AE60;
+            --whatsapp: #25D366;
+            --bg: #F4F7F6;
+            --text: #333333;
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--bg); 
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+        }
+        .app-container { 
+            max-width: 480px; 
+            width: 100%;
+            background: white; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 90px; /* Extra padding for FABs */
+        }
+        
+        /* Image Carousel */
+        .hero { position: relative; height: 320px; overflow: hidden; background: #000; }
+        .carousel { display: flex; transition: transform 0.5s ease-in-out; height: 100%; width: 300%; }
+        .carousel img { width: 33.333%; height: 100%; object-fit: cover; }
+        .hero-overlay { 
+            position: absolute; bottom: 0; width: 100%; 
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); 
+            color: white; padding: 40px 20px 20px; box-sizing: border-box; 
+        }
+        .hero h1 { margin: 0; font-size: 26px; }
+        .hero p { margin: 5px 0 0; color: #ddd; font-style: italic; }
+        .badge { background: var(--accent); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 8px; display: inline-block; }
+        .dots-container { position: absolute; bottom: 15px; right: 20px; display: flex; gap: 6px; }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.4); border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: var(--accent); transform: scale(1.2); }
+
+        /* Navigation Tabs */
+        .tabs { display: flex; background: var(--primary); position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+        .tab { 
+            flex: 1; text-align: center; padding: 12px 5px; color: rgba(255,255,255,0.6); 
+            font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; 
+            transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .tab i { font-size: 18px; }
+        .tab.active { color: white; border-bottom: 3px solid var(--accent); }
+
+        /* Content Sections */
+        .tab-content { display: none; padding: 20px; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Info Cards */
+        .info-card { 
+            background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 15px; 
+            margin-bottom: 15px; border-left: 4px solid var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
+        }
+        .info-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 18px; }
+        .info-card img { width: 100%; border-radius: 8px; margin-top: 10px; }
+        .info-card ul { padding-left: 20px; margin: 0; color: #555; line-height: 1.6; }
+        
+        .contact-card ul { padding-left: 0; list-style: none; }
+        .contact-card li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+        .contact-card i { color: var(--success); margin-top: 4px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: var(--primary); color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        /* Alerts */
+        .alert-box { background-color: #FDEDEC; border: 2px solid var(--danger); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .alert-box h3 { color: var(--danger); margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;}
+        .alert-box ul { padding-left: 20px; margin: 0; color: #333; line-height: 1.6; }
+        
+        .alert-success { background-color: #EAFaf1; border: 2px solid var(--success); padding: 15px; border-radius: 12px; }
+        .alert-success h3 { color: var(--success); margin: 0 0 10px 0; }
+
+        /* Interactive Quiz */
+        .quiz-card { background: #fff; border: 2px dashed #ccc; border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; }
+        .quiz-title { font-size: 16px; color: #777; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .quiz-question { font-size: 18px; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+        .quiz-btn { 
+            border: none; padding: 12px 20px; margin: 5px; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; color: white; width: 45%; font-size: 16px; transition: 0.2s;
+        }
+        .btn-mito { background: var(--danger); }
+        .btn-realidad { background: var(--success); }
+        .quiz-btn:active { transform: scale(0.95); }
+        .quiz-feedback { margin-top: 15px; font-size: 15px; font-weight: 600; padding: 12px; border-radius: 8px; display: none; }
+
+        /* External Link */
+        .btn-link { 
+            display: block; width: 100%; padding: 15px; text-align: center; 
+            background-color: var(--primary); color: white; text-decoration: none; 
+            border-radius: 8px; font-weight: bold; margin-top: 20px; box-sizing: border-box;
+        }
+
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 20px;
+            right: calc(50% - 220px);
+            left: calc(50% - 220px);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        @media (max-width: 480px) {
+            .fab-container { right: 0; left: 0; }
+        }
+        .fab { 
+            pointer-events: auto;
+            width: 60px; height: 60px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-size: 28px; text-decoration: none; transition: 0.3s;
+        }
+        .fab-em { background: var(--danger); color: white; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4); }
+        .fab-wa { background: var(--whatsapp); color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
+        
+        .fab:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Image Carousel -->
+        <div class="hero">
+            <div class="carousel" id="carousel">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bothrops_diporus_182439418.jpg" alt="Yarará Chica">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bothrops_diporus_105757043.jpg" alt="Patrón de la serpiente">
+                <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bothrops_diporus_170596948.jpg" alt="Serpiente yarará">
+            </div>
+            <div class="hero-overlay">
+                <span class="badge">Especie Autóctona</span>
+                <h1>Yarará Chica</h1>
+                <p>Bothrops diporus</p>
+            </div>
+            <div class="dots-container">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('info', this)"><i class="fas fa-info-circle"></i> Conocerla</div>
+            <div class="tab" onclick="openTab('prevencion', this)"><i class="fas fa-shield-alt"></i> Prevención</div>
+            <div class="tab" onclick="openTab('juego', this)"><i class="fas fa-gamepad"></i> Interactivo</div>
+        </div>
+
+        <!-- Tab 1: Información -->
+        <div id="info" class="tab-content active">
+            <p style="color: #666; font-size: 15px; margin-top:0;">Reconocer a esta serpiente es el paso más importante para evitar accidentes y proteger nuestra fauna.</p>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-ruler-combined"></i> Tamaño y Dimensiones</h3>
+                <ul>
+                    <li><strong>General:</strong> Es una serpiente de tamaño mediano a pequeño dentro de su género.</li>
+                    <li><strong>Adultos habituales:</strong> Miden habitualmente entre <strong>60 cm y 90 cm</strong>.</li>
+                    <li><strong>Excepciones:</strong> Algunos ejemplares excepcionales pueden alcanzar o superar ligeramente el metro de longitud (hasta <strong>1.20 m</strong>).</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-tree"></i> Hábitat</h3>
+                <ul>
+                    <li>Se adapta a diversos ambientes como el Chaco seco y húmedo, selvas serranas, montes y zonas de pastizales.</li>
+                    <li>Suele refugiarse bajo troncos caídos, acumulaciones de hojas secas, piedras o arbustos para protegerse de las altas temperaturas.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-moon"></i> Hábitos</h3>
+                <ul>
+                    <li>Su mayor nivel de actividad se registra durante las estaciones cálidas.</li>
+                    <li>Posee hábitos preferentemente crepusculares o nocturnos.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-utensils"></i> Dieta</h3>
+                <ul>
+                    <li>Se alimenta principalmente de roedores pequeños.</li>
+                    <li>Ocasionalmente puede consumir aves y anfibios.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-baby"></i> Reproducción</h3>
+                <ul>
+                    <li>Es una especie <strong>ovovivípara</strong>.</li>
+                    <li><strong>Desarrollo:</strong> Aunque el proceso reproductivo inicia con la formación de huevos en el interior de la hembra, estos no son depositados en la intemperie.</li>
+                    <li><strong>Camada:</strong> Tras la eclosión interna, la madre pare a las crías completamente formadas y listas para independizarse.</li>
+                    <li><strong>Número:</strong> Cada camada suele aportar un promedio de <strong>7 a 18 crías vivas</strong> por ciclo reproductivo, asegurando la supervivencia de la especie.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-search"></i> ¿Cómo identificarla?</h3>
+                <ul>
+                    <li><strong>Patrón:</strong> Manchas marrones/negras en forma de herradura, riñón o "C" invertida a los lados.</li>
+                    <li><strong>Cabeza:</strong> Triangular y destacada del cuerpo.</li>
+                    <li><strong>Ojos:</strong> Pupila vertical elíptica.</li>
+                    <li><strong>Seña clave:</strong> Posee "foseta loral" (un hueco entre el ojo y la nariz que detecta calor).</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-balance-scale"></i> Yarará vs. Culebra</h3>
+                <table>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Yarará (Venenosa)</th>
+                        <th>Culebra (Inofensiva)</th>
+                    </tr>
+                    <tr>
+                        <td>Cabeza</td>
+                        <td>Triangular</td>
+                        <td>Redondeada</td>
+                    </tr>
+                    <tr>
+                        <td>Ojos</td>
+                        <td>Pupila vertical</td>
+                        <td>Pupila redonda</td>
+                    </tr>
+                    <tr>
+                        <td>Foseta Loral</td>
+                        <td>SÍ tiene</td>
+                        <td>NO tiene</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!-- TARJETA DE CONTACTO DIBIOVA -->
+            <div class="info-card contact-card" style="border-left-color: var(--success); background-color: #F8FDF9;">
+                <h3 style="color: var(--success);"><i class="fas fa-flask"></i> Gabinete DIBIOVA</h3>
+                <p style="margin: 5px 0; font-size: 14px; font-weight: bold; color: #555;">Dpto. de Biología, FCEFyN – UNSJ</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 12px 0;">
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> <span>Box 301 – Av. José Ignacio de la Roza Oeste 590, Rivadavia, San Juan</span></li>
+                    <li><i class="fas fa-phone-alt"></i> <span>264-4478324</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>gabinete.dibiova@unsj-cuim.edu.ar</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 2: Prevención -->
+        <div id="prevencion" class="tab-content">
+            <div class="alert-success">
+                <h3><i class="fas fa-check-circle"></i> ¿Cómo prevenir?</h3>
+                <ul>
+                    <li>Usa botas de caña alta o calzado cerrado al caminar en el monte.</li>
+                    <li>Mantén el pasto corto alrededor de la vivienda.</li>
+                    <li>No acumules leña, escombros ni basura (atraen roedores, y estos a las serpientes).</li>
+                    <li>No metas las manos en cuevas o debajo de piedras.</li>
+                </ul>
+            </div>
+
+            <div class="alert-box">
+                <h3><i class="fas fa-exclamation-triangle"></i> Si ocurre un accidente:</h3>
+                <ul>
+                    <li><strong>1. Calma:</strong> Mantener a la persona relajada y en reposo.</li>
+                    <li><strong>2. Desajustar:</strong> Quitar anillos, pulseras o ropa ajustada.</li>
+                    <li><strong>3. Lavar:</strong> Usar solo agua y jabón en la herida.</li>
+                    <li><strong>4. URGENCIA:</strong> Ir de inmediato al hospital para recibir Suero Antiofídico.</li>
+                </ul>
+            </div>
+
+            <div class="info-card" style="border-left-color: var(--danger);">
+                <h3 style="color: var(--danger);"><i class="fas fa-ban"></i> Lo que NUNCA debes hacer</h3>
+                <ul>
+                    <li>NO hacer torniquetes.</li>
+                    <li>NO succionar el veneno con la boca.</li>
+                    <li>NO cortar ni quemar la herida.</li>
+                    <li>NO aplicar hielo ni dar bebidas alcohólicas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 3: Juego Interactivo -->
+        <div id="juego" class="tab-content">
+            <h2 style="color: var(--primary); text-align: center; margin-top: 0;">¿Cuánto sabes?</h2>
+            
+            <div class="quiz-card" id="q1">
+                <div class="quiz-title">Pregunta 1 de 3</div>
+                <div class="quiz-question">"Si te muerde una yarará, debes hacer un torniquete rápido para detener el veneno."</div>
+                <button class="quiz-btn btn-mito" onclick="answerQuiz('q1', false, false)">Mito</button>
+                <button class="quiz-btn btn-realidad" onclick="answerQuiz('q1', true, false)">Realidad</button>
+                <div class="quiz-feedback" id="f1"></div>
+            </div>
+
+            <div class="quiz-card" id="q2" style="display: none;">
+                <div class="quiz-title">Pregunta 2 de 3</div>
+                <div class="quiz-question">"Las yararás no son agresivas y solo atacan si se sienten amenazadas o las pisan."</div>
+                <button class="quiz-btn btn-mito" onclick="answerQuiz('q2', false, true)">Mito</button>
+                <button class="quiz-btn btn-realidad" onclick="answerQuiz('q2', true, true)">Realidad</button>
+                <div class="quiz-feedback" id="f2"></div>
+            </div>
+
+            <div class="quiz-card" id="q3" style="display: none;">
+                <div class="quiz-title">Pregunta 3 de 3</div>
+                <div class="quiz-question">"Chupar el veneno con la boca es un método efectivo para salvar a la víctima."</div>
+                <button class="quiz-btn btn-mito" onclick="answerQuiz('q3', false, false, true)">Mito</button>
+                <button class="quiz-btn btn-realidad" onclick="answerQuiz('q3', true, false, true)">Realidad</button>
+                <div class="quiz-feedback" id="f3"></div>
+            </div>
+
+            <a href="https://venenosossj.unsj.edu.ar/animales/serpiente/30" target="_blank" class="btn-link">Ver ficha técnica en la UNSJ</a>
+        </div>
+
+        <!-- Botones Flotantes (Emergencia y WhatsApp) -->
+        <div class="fab-container">
+            <!-- Botón 107 (Izquierda) -->
+            <a href="tel:107" class="fab fab-em" title="Llamar a Emergencias (107)">
+                <i class="fas fa-phone-alt"></i>
+            </a>
+            
+            <!-- Botón WhatsApp (Derecha) -->
+            <a href="https://wa.me/5492644478324" class="fab fab-wa" target="_blank" title="Contactar Gabinete DIBIOVA por WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // --- Carousel Logic ---
+        let currentSlide = 0;
+        const carousel = document.getElementById('carousel');
+        const dots = document.querySelectorAll('.dot');
+        
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % 3;
+            carousel.style.transform = `translateX(-${currentSlide * 33.333}%)`;
+            dots.forEach(d => d.classList.remove('active'));
+            dots[currentSlide].classList.add('active');
+        }, 3000);
+
+        // --- Tabs Logic ---
+        function openTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // --- Quiz Logic ---
+        function answerQuiz(questionId, isTrue, correctAnswer, isLast = false) {
+            const feedback = document.getElementById('f' + questionId.charAt(1));
+            feedback.style.display = 'block';
+            
+            if (isTrue === correctAnswer) {
+                feedback.style.backgroundColor = '#EAFaf1';
+                feedback.style.color = '#27AE60';
+                feedback.innerHTML = '<i class="fas fa-check"></i> ¡Correcto!';
+            } else {
+                feedback.style.backgroundColor = '#FDEDEC';
+                feedback.style.color = '#E74C3C';
+                feedback.innerHTML = '<i class="fas fa-times"></i> Incorrecto.';
+            }
+
+            if(questionId === 'q1') feedback.innerHTML += ' El torniquete concentra el veneno y causa necrosis.';
+            if(questionId === 'q2') feedback.innerHTML += ' Son tímidas. Los accidentes ocurren por pisarlas sin querer.';
+            if(questionId === 'q3') feedback.innerHTML += ' La succión no funciona y puede infectar la herida.';
+
+            if (!isLast) {
+                setTimeout(() => {
+                    document.getElementById(questionId).style.display = 'none';
+                    let nextId = 'q' + (parseInt(questionId.charAt(1)) + 1);
+                    document.getElementById(nextId).style.display = 'block';
+                }, 4000);
+            }
+        }
+    </script>
+</body>
+</html>
